@@ -47,10 +47,6 @@ sum = 0
 for letter in duplicateLetters:
     if letter in dict:
         sum += dict.get(letter)
-    # if i in lower:
-        # sum += lower.get(i)
-    # if i in upper:
-        # sum += upper.get(i)
 
 # Print sum
 print(sum)
