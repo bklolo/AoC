@@ -2,7 +2,8 @@ import re
 from array import *
 x = open('AoC5.txt').read()
 strip = re.split("\n", x)
-# print(strip)
+print("Strip \n", strip)
+
 cols = []
 count = 0
 for line in strip:
@@ -19,50 +20,32 @@ for line in strip:
         row.append(line[33])
         count += 1
         cols.append(row)
-print(cols)
+print("Cols \n", cols)
 
-row1 = []
-row2 = []
-row3 = []
-row4 = []
-row5 = []
-row6 = []
-row7 = []
-row8 = []
-row9 = []
-rows = []
-for item in cols:
-    row1.append(item[0])
-    row2.append(item[1])
-    row3.append(item[2])
-    row4.append(item[3])
-    row5.append(item[4])
-    row6.append(item[5])
-    row7.append(item[6])
-    row8.append(item[7])
-    row9.append(item[8])
+############################
+def grabBoxes(c, r):
+    boxList = []
+    for ch in r:
+        if not ch.isspace():
+            boxList.append(r[c])
+    return boxList
 
-print(row3)
+colNum = 1
+cList = []
+for column in range(0, 9): # for each col
+    rList = []
+    for row in range(0, 8): # for each row
+        rList.append(grabBoxes(row, cols[column]))
+    cList.append(rList)
+print("cList \n", cList)
+############################
+## the above code grabs letters on a diagonal
+## want to scan every row, but iterate cols
 
-for x in row3:
-    if x == ' ':
-        row3.remove(x)
-print(row3)
-'''
-a = []
-for x in strip:
-    b = []
-    if x != "\n":
-        b.append(x)
-    a.append(b)
-print(a)
-# res = [list(sub) for sub in test_list]
-'''
 '''pseudo code'''
 # get input from file as string
 # deal with box input
-# create list of each column
-# use substrings to collect boxes
-# for each line (\n) of file
-# put column letters in appropriate lists
-# deal with moves input
+    # add each row to a list
+    # use substrings to collect letters from rows
+    # put column letters in appropriate lists
+    # deal with moves input
