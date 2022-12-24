@@ -1,47 +1,59 @@
-import re
-from array import *
+
+# Open file
 x = open('AoC5.txt').read()
-strip = re.split("\n", x)
-print("Strip \n", strip)
 
-cols = []
-count = 0
-for line in strip:
-    row = []
-    if count < 8:
-        row.append(line[1])
-        row.append(line[5])
-        row.append(line[9])
-        row.append(line[13])
-        row.append(line[17])
-        row.append(line[21])
-        row.append(line[25])
-        row.append(line[29])
-        row.append(line[33])
-        count += 1
-        cols.append(row)
-print("Cols \n", cols)
+# Split text by \n
+strip = x.split("\n")
 
-############################
-def grabBoxes(c, r):
-    boxList = []
-    for ch in r:
-        if not ch.isspace():
-            boxList.append(r[c])
-    return boxList
+# Grab all Boxes
+tallestStack = 8
+boxes = strip[0:tallestStack]
 
-colNum = 1
-cList = []
-for column in range(0, 9): # for each col
+# Populate list of boxes
+totalColumns = 9
+columnNumber = 1
+columns = []
+for i in range(0, totalColumns):
     rList = []
-    for row in range(0, 8): # for each row
-        rList.append(grabBoxes(row, cols[column]))
-    cList.append(rList)
-print("cList \n", cList)
-############################
-## the above code grabs letters on a diagonal
-## want to scan every row, but iterate cols
+    for string in boxes:
+        if string[columnNumber] != ' ':
+            rList.append(string[columnNumber])
+    rList.reverse()
+    columns.append(rList)
+    columnNumber += 4
 
+# Grab move commands
+commandsBegin = 10
+commands = strip[commandsBegin:]
+print("commands\n", commands)
+
+# Move amount is at commands[5-6]
+    # If moveAmount is a double-digit:
+        # index of columns += 1
+    # Else
+        # index of fromCol = moveAmount+7, toCol = movement+12
+# Execute commands
+moveAmount = 0
+moveFrom = 0
+moveTo = 0
+offset = 1
+for line in commands:
+    if line[6] != ' ':
+        moveAmount = int(line[5:7])
+        moveFrom = int(line[13]) - offset
+        moveTo = int(line[18]) - offset
+    else:
+        moveAmount = int(line[5])
+        moveFrom = int(line[12]) - offset
+        moveTo = int(line[17]) - offset
+
+    for amt in range(0, moveAmount):
+        columns[moveTo].append(columns[moveFrom].pop())
+answer = []
+for item in columns:
+    answer.append(item.pop())
+
+print("answer\n", answer)
 '''pseudo code'''
 # get input from file as string
 # deal with box input
