@@ -1,5 +1,5 @@
 import re
-x = open('2023\\AoC1_Input.txt').read()
+x = open('2023\\Problem_1\\input.txt').read()
 document = re.split("\n", x)
 
 row = []
@@ -10,12 +10,14 @@ for line in document:
             current_number += letter
     if current_number:
         row.append(current_number)
-print(row)
+#print(row)
+
 sum=0
 for item in row:
     first = item[0]
     last = item[-1]
     num = first+last
     sum += int(num)
-    print("num= ",num,"sum= ",sum)
+
+print(sum)
 
