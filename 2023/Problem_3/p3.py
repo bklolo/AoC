@@ -1,46 +1,65 @@
+# Import the regular expression module
+import re
 
-with open('2023\\Problem_3\\sample.txt') as file: 
+# Open the file 'sample.txt' and read its contents, splitting them into lines
+with open('2023\\Problem_3\\input.txt') as file: 
     grid = file.read().split("\n")
 
-def is_touching_asterisk(grid, row, col):
-    # Define bounds
-    height, width = len(grid), len(grid[0])
-    # Define the eight possible directions to check (above, below, diagonal)
-    directions = [(-1, -1), (-1, 0), (-1, 1), (  0, -1), (0, 1),   (1, -1), (1, 0), (1, 1)]
+def symbol_locations(grid, specialChars):
+    locations = []
+    # Iterate over each row and line in the grid
+    for row_index, line in enumerate(grid):
+        # Iterate over each column and character in the line
+        for col_index, char in enumerate(line):
+            # Check if the character is one of the specified symbols
+            if char in specialChars:
+                # If yes, add the (row, column) index to the locations list
+                locations.append((col_index, row_index))
+    # sort special_coords by its y value to prevent searching for chars in rows that are too far away
+    sorted_locations = sorted(locations, key=lambda coord: coord[1])
 
-    # for each row in grid, scan for an asterisk
-    for row_index, row in enumerate(grid):
-        cell = []
-        # Check if an asterisk is present in the row
-        if '*' in row:
-            # when an asterisk is found, get the row/col location
-            col_index = row.index('*')
-            cell = [row_index, col_index]
+    return sorted_locations
 
-            # check surrounding cells for numbers
-            for xdir, ydir in directions:
-                
-                new_row, new_col = (row_index + xdir), (col_index + ydir)
-                
-                # check if the new row and col are in bounds
-                if 0 <= new_row < height and 0 <= new_col < width:
-                    
-                    value = grid[new_row][new_col]
-                    
-                    # check if the cell holds a digit
-                    if value.isDigit():
-                        number = value
-                        # create left and right of the number for "."
-                        left_col, right_col = new_col-1, new_col+1
-                        while right_col < width and value == '.':
-                            number += value
-                            right_col += 1
-    # if number found
-        # check left and right of number for .
-        # if digit, collect full number
+def is_touching_asterisk(grid, special_coords):
+    # The list of part numbers to be returned
+    part_numbers = []
+    # The xy directions to check against special_coorsd per digit
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    # Enumerate grid, keeping track of the row index while iterating over the current line string
+    for row_index, line in enumerate(grid):
+        # Iterate over special_coords that are within or 1 more than the current row
+        for symbol_x, symbol_y in filter(lambda coord: row_index - 1 <= coord[1] <= row_index + 1, special_coords):
+            # Find all occurrences of digits in the line
+            for match in re.finditer(r'(\d+)', line):
+                # Boolean to prevent duplicate values
+                numFound = False
+                # Enumerate each number, keeping track of the start index (digit not needed but good for debugging)
+                for digit_index, digit in enumerate(match.group()):
+                    x = match.start() + digit_index
+                    y = row_index
+                    # Iterate over directions, checking against special_coords
+                    for x_dir, y_dir in directions:
+                        # Checking coords surrounding current digit
+                        new_x, new_y = x + x_dir, y + y_dir
+                        # If the coords match, append the number to the list
+                        if (new_x, new_y) == (symbol_x, symbol_y) and not numFound:
+                            part_numbers.append(int(match.group()))
+                            # Toggle boolean to prevent duplicate values
+                            numFound = True
+    return part_numbers
 
-# Check if the number at row 2, column 3 is touching an asterisk
-part_numbers = []
-result = is_touching_asterisk(grid, 0, 0)
-print(result)  # Output: True
 
+
+
+# Get the locations of asterisks in the grid
+unique_special_chars = {char for line in grid for char in re.findall(r'[^a-zA-Z0-9\s.]', line)}
+symbol_coords = symbol_locations(grid, unique_special_chars)
+
+# Check if digits are touching asterisks and print the result
+result = is_touching_asterisk(grid, symbol_coords)
+
+# Calculate the sum of the results. A set automatically removes duplicates
+total_sum = sum(set(result))
+
+# Print the total sum
+print(total_sum)

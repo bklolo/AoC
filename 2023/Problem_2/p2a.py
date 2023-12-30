@@ -26,12 +26,7 @@ def getCount(set, colors, max_amounts):
 
 
 # put games into list of lists
-games = []
-for line in document:
-    sets = []
-    sets.append(line)
-    games.append(sets)
-
+games = [[line] for line in document]
 
 # Provided maximum amounts of red, green, and blue cubes
 max_amounts = {"red":12,"blue":14,"green":13}
